@@ -4,3 +4,6 @@ Release
 *.opensdf
 *.suo
 *.vcxproj.user
+*.pdb
+*.ipch
+*.ilk
