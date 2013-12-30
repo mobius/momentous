@@ -9,7 +9,7 @@
 #include "d3du.h"
 #include "util.h"
 #include "math.h"
-#include "assimp/Importer.hpp"
+#include "assimp/cimport.h"
 #include "assimp/scene.h"
 #include "assimp/postprocess.h"
 
@@ -233,9 +233,7 @@ static d3du_tex* make_force_tex(ID3D11Device* dev, int size, float strength, flo
 
 int main()
 {
-
-	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile("data/box.obj", aiProcess_MakeLeftHanded|aiProcess_Triangulate);
+	const aiScene* scene = aiImportFile("data/box.obj", aiProcess_MakeLeftHanded|aiProcess_Triangulate);
     assert(scene);
 
     d3du_context* d3d = d3du_init("Momentous", 1280, 720, D3D_FEATURE_LEVEL_10_0);
