@@ -9,9 +9,6 @@
 #include "d3du.h"
 #include "util.h"
 #include "math.h"
-#include "assimp/cimport.h"
-#include "assimp/scene.h"
-#include "assimp/postprocess.h"
 
 static union {
     ID3D11Buffer* buffers[16];
@@ -232,13 +229,10 @@ static d3du_tex* make_force_tex(ID3D11Device* dev, int size, float strength, flo
 }
 
 int main()
-{
-	const aiScene* scene = aiImportFile("data/box.obj", aiProcess_MakeLeftHanded|aiProcess_Triangulate);
-    assert(scene);
-
+{	
     d3du_context* d3d = d3du_init("Momentous", 1280, 720, D3D_FEATURE_LEVEL_10_0);
 
-    char* shader_source = read_file("shaders.hlsl");
+    char* shader_source = read_file("assets/shader/shaders.hlsl");
 
     ID3D11VertexShader *update_vs = d3du_compile_and_create_shader(d3d->dev, shader_source,
         "vs_4_0", "UpdateVertShader").vs;
@@ -249,8 +243,8 @@ int main()
 
     ID3D11VertexShader *cube_vs = d3du_compile_and_create_shader(d3d->dev, shader_source,
         "vs_4_0", "RenderCubeVertexShader").vs;
-    ID3D11PixelShader *cube_ps = d3du_compile_and_create_shader(d3d->dev, shader_source,
-        "ps_4_0", "RenderCubePixelShader").ps;
+	ID3D11PixelShader *cube_ps = d3du_compile_and_create_shader(d3d->dev, shader_source,
+		"ps_4_0", "RenderCubePixelShader").ps;
 
     free(shader_source);
 
