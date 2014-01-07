@@ -102,5 +102,27 @@ void d3du_timer_bracket_begin( d3du_context * ctx, d3du_timer * timer );
 void d3du_timer_bracket_end( d3du_context * ctx, d3du_timer * timer );
 void d3du_timer_report( d3du_context * ctx, d3du_timer * timer, char const * label );
 
+
+inline void* d3du_map_cbuf_typeless(d3du_context* ctx, ID3D11Buffer* buf)
+{
+    D3D11_MAPPED_SUBRESOURCE mapped;
+    HRESULT hr = ctx->ctx->Map(buf, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+    if (FAILED(hr))
+        panic("D3D buffer map failed!\n");
+    return mapped.pData;
+}
+
+template<typename T>
+T* d3du_map_cbuf(d3du_context* ctx, ID3D11Buffer* buf)
+{
+    return (T*) d3du_map_cbuf_typeless(ctx, buf);
+}
+
+inline void d3du_unmap_cbuf(d3du_context* ctx, ID3D11Buffer* buf)
+{
+    ctx->ctx->Unmap(buf, 0);
+}
+
+
 #endif
 

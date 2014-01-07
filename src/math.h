@@ -315,4 +315,37 @@ namespace math {
 #undef IMPL_LINEAR_OPS
 #undef IMPL_VECTOR_OPS
 
+namespace math
+{
+    float srgb2lin(float x)
+    {
+        static const float lin_thresh = 0.04045f;
+        if (x < lin_thresh)
+            return x * (1.0f / 12.92f);
+        else
+            return std::pow((x + 0.055f) / 1.055f, 2.4f);
+    }
+
+    vec3 srgb_color(int col)
+    {
+        return math::vec3(
+            srgb2lin(((col >> 16) & 0xff) / 255.0f),
+            srgb2lin(((col >>  8) & 0xff) / 255.0f),
+            srgb2lin(((col >>  0) & 0xff) / 255.0f)
+        );
+    }
+
+    bool is_pow2(int x)
+    {
+        return x != 0 && (x & (x - 1)) == 0;
+    }
+
+    float randf()
+    {
+        return 1.0f * rand() / RAND_MAX;
+    }
+}
+
+
+
 #endif // MATH_H_INCLUDED

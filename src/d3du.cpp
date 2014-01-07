@@ -3,8 +3,9 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <string.h>
-#include "d3du.h"
+
 #include "util.h"
+#include "d3du.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")

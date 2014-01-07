@@ -6,9 +6,9 @@
 #include <cmath>
 #include <algorithm>
 
-#include "d3du.h"
-#include "util.h"
 #include "math.h"
+#include "util.h"
+#include "d3du.h"
 
 static union {
     ID3D11Buffer* buffers[16];
@@ -42,44 +42,6 @@ struct UpdateConstBuf {
     float vel_scale;
 };
 
-static float srgb2lin(float x)
-{
-    static const float lin_thresh = 0.04045f;
-    if (x < lin_thresh)
-        return x * (1.0f / 12.92f);
-    else
-        return std::pow((x + 0.055f) / 1.055f, 2.4f);
-}
-
-static math::vec3 srgb_color(int col)
-{
-    return math::vec3(
-        srgb2lin(((col >> 16) & 0xff) / 255.0f),
-        srgb2lin(((col >>  8) & 0xff) / 255.0f),
-        srgb2lin(((col >>  0) & 0xff) / 255.0f)
-    );
-}
-
-static void* map_cbuf_typeless(d3du_context* ctx, ID3D11Buffer* buf)
-{
-    D3D11_MAPPED_SUBRESOURCE mapped;
-    HRESULT hr = ctx->ctx->Map(buf, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
-    if (FAILED(hr))
-        panic("D3D buffer map failed!\n");
-    return mapped.pData;
-}
-
-template<typename T>
-static T* map_cbuf(d3du_context* ctx, ID3D11Buffer* buf)
-{
-    return (T*) map_cbuf_typeless(ctx, buf);
-}
-
-static void unmap_cbuf(d3du_context* ctx, ID3D11Buffer* buf)
-{
-    ctx->ctx->Unmap(buf, 0);
-}
-
 static ID3D11Buffer* make_cube_inds(ID3D11Device* dev, int num_cubes)
 {
     static const USHORT cube_inds[] = {
@@ -103,16 +65,6 @@ static ID3D11Buffer* make_cube_inds(ID3D11Device* dev, int num_cubes)
     return ind_buf;
 }
 
-static bool is_pow2(int x)
-{
-    return x != 0 && (x & (x - 1)) == 0;
-}
-
-static float randf()
-{
-    return 1.0f * rand() / RAND_MAX;
-}
-
 static math::vec3 rand_vec3_unit_sphere(float* len_sq_out = nullptr)
 {
     math::vec3 v;
@@ -120,9 +72,9 @@ static math::vec3 rand_vec3_unit_sphere(float* len_sq_out = nullptr)
 
     do
     {
-        v.x = 2.0f * randf() - 1.0f;
-        v.y = 2.0f * randf() - 1.0f;
-        v.z = 2.0f * randf() - 1.0f;
+        v.x = 2.0f * math::randf() - 1.0f;
+        v.y = 2.0f * math::randf() - 1.0f;
+        v.z = 2.0f * math::randf() - 1.0f;
         l = math::len_sq(v);
     } while (l > 1.0f);
 
@@ -148,7 +100,7 @@ static int step_idx(int base, int step, int mask)
 static d3du_tex* make_force_tex(ID3D11Device* dev, int size, float strength, float post_scale)
 {
     using namespace math;
-    assert(is_pow2(size));
+    assert(math::is_pow2(size));
 
     int stepx = 1, maskx = size - 1;
     int stepy = size, masky = (size - 1) * size;
@@ -315,14 +267,14 @@ int main()
         }
 
         // set up update constant buffer
-        auto update_consts = map_cbuf<UpdateConstBuf>(d3d, update_const_buf);
+        auto update_consts = d3du_map_cbuf<UpdateConstBuf>(d3d, update_const_buf);
         update_consts->field_scale = math::vec3(32.0f);
         update_consts->damping = 0.99f;
         update_consts->field_offs = math::vec3(0.0f);
         update_consts->accel = 0.75f;
         update_consts->field_sample_scale = math::vec3(1.0f / 32.0f);
         update_consts->vel_scale = part_size * 6.0f;
-        unmap_cbuf(d3d, update_const_buf);
+        d3du_unmap_cbuf(d3d, update_const_buf);
 
         // update position (potentially several time steps)
         d3d->ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
@@ -379,7 +331,7 @@ int main()
         mat44 clip_from_view = mat44::perspectiveD3D(1280.0f / 720.0f, 1.0f, 0.01f, 50.0f);
         mat44 clip_from_world = clip_from_view * view_from_world;
 
-        auto cube_consts = map_cbuf<CubeConstBuf>(d3d, cube_const_buf);
+        auto cube_consts = d3du_map_cbuf<CubeConstBuf>(d3d, cube_const_buf);
         cube_consts->clip_from_world = clip_from_world;
         cube_consts->world_down_vector = math::vec3(0.0f, 1.0f, 0.0f);
         cube_consts->time_offs = frame * 0.0001f;
@@ -388,7 +340,7 @@ int main()
         cube_consts->light_color_back = srgb_color(0x101040);
         cube_consts->light_color_fill = srgb_color(0x602020);
         cube_consts->light_dir = normalize(vec3(0.0f, -0.7f, -0.3f));
-        unmap_cbuf(d3d, cube_const_buf);
+        d3du_unmap_cbuf(d3d, cube_const_buf);
 
         // render cubes
         ID3D11ShaderResourceView* part_pos_srvs[2];

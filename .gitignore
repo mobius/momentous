@@ -1,10 +1,12 @@
 Debug
 Release
 build
+
 *.sdf
 *.opensdf
 *.suo
 *.vcxproj.user
 *.pdb
+*.idb
 *.ipch
 *.ilk
