@@ -455,9 +455,10 @@ ID3DBlob * d3du_compile_source_or_die( char const * source, char const * profile
     return code;
 }
 
-d3du_shader d3du_compile_and_create_shader( ID3D11Device * dev, char const * source, char const * profile, char const * entrypt )
+d3du_shader d3du_compile_and_create_shader( ID3D11Device * dev, char const * source, char const * profile, char const * entrypt, ID3DBlob *& code )
 {
-    ID3DBlob * code = d3du_compile_source_or_die( source, profile, entrypt );
+    code = d3du_compile_source_or_die( source, profile, entrypt );
+    
     HRESULT hr = S_OK;
     d3du_shader sh;
 
@@ -466,11 +467,11 @@ d3du_shader d3du_compile_and_create_shader( ID3D11Device * dev, char const * sou
     switch ( profile[0] )
     {
     case 'p':   hr = dev->CreatePixelShader( code->GetBufferPointer(), code->GetBufferSize(), NULL, &sh.ps ); break;
-    case 'v':   hr = dev->CreateVertexShader( code->GetBufferPointer(), code->GetBufferSize(), NULL, &sh.vs ); break;
     case 'c':   hr = dev->CreateComputeShader( code->GetBufferPointer(), code->GetBufferSize(), NULL, &sh.cs ); break;
     case 'g':   hr = dev->CreateGeometryShader( code->GetBufferPointer(), code->GetBufferSize(), NULL, &sh.gs ); break;
     case 'h':   hr = dev->CreateHullShader( code->GetBufferPointer(), code->GetBufferSize(), NULL, &sh.hs ); break;
     case 'd':   hr = dev->CreateDomainShader( code->GetBufferPointer(), code->GetBufferSize(), NULL, &sh.ds ); break;
+    case 'v':   hr = dev->CreateVertexShader( code->GetBufferPointer(), code->GetBufferSize(), NULL, &sh.vs ); break;
     default:    panic( "Unsupported shader profile '%s'\n", profile );
     }
 
@@ -479,6 +480,19 @@ d3du_shader d3du_compile_and_create_shader( ID3D11Device * dev, char const * sou
 
     return sh;
 }
+
+ID3D11InputLayout * d3du_make_layout( ID3D11Device * dev, D3D11_INPUT_ELEMENT_DESC * layout, UINT size, ID3DBlob * vs)
+{
+    HRESULT hr = S_OK;
+    ID3D11InputLayout * result; 
+    hr = dev->CreateInputLayout(layout, size, vs->GetBufferPointer(), vs->GetBufferSize(), &result);
+    if( FAILED(hr) )
+        panic("Couldn't make layout\n");
+
+    return result;
+
+}
+
 
 d3du_tex::d3du_tex( ID3D11Resource * resrc, ID3D11ShaderResourceView * srv, ID3D11RenderTargetView * rtv )
     : resrc(resrc), srv(srv), rtv(rtv)
@@ -682,6 +696,7 @@ void d3du_timer_report( d3du_context * ctx, d3du_timer * timer, char const * lab
     timer_ensure_max_in_flight( ctx, timer, 0 );
     run_stats_report( timer->stats, label );
 }
+
 
 // @cdep pre $set(c8sysincludes, -I$dxPath/include $c8sysincludes)
 // @cdep pre $set(csysincludes64EMT, -I$dxPath/include $csysincludes64EMT)

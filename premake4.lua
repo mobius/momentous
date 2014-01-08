@@ -44,7 +44,7 @@ solution "samples"
 		kind "WindowedApp"
 		language "C++"
 		includedirs {"extern/glfw/include/", "extern/glew/include/"}
-		libdirs	{"extern/glfw/lib/", "extern/glew/lib/Release/Win32/" }
+		libdirs	{"extern/glfw/lib/", "extern/glew/lib/Win32/" }
 		links { "glfw3dll", "OpenGL32", "glew32" }
 		files
 		{

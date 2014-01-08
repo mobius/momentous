@@ -73,6 +73,10 @@ union d3du_shader {
 // Compile and create a shader with the given profile on the given device
 d3du_shader d3du_compile_and_create_shader( ID3D11Device * dev, char const * source, char const * profile, char const * entrypt );
 
+// Creates a layout
+ID3D11InputLayout * d3du_make_layout( ID3D11Device * dev, D3D11_INPUT_ELEMENT_DESC * layout, UINT size, ID3DBlob * vs);
+
+
 // Texture helper
 struct d3du_tex {
     union {
@@ -140,5 +144,5 @@ inline void d3du_unmap_cbuf(d3du_context* ctx, ID3D11Buffer* buf)
 }
 
 
-#endif
+#endif  // D3DU_H
 

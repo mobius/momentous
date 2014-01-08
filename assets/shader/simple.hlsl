@@ -1,24 +1,60 @@
+//-------------------------------------------------------------------------
+// Structs
 struct VSIn
 {
 	float4 pos : POSITION;
-	float4 color : COLOR;
+	float2 uv : TEXCOORD0; 
 };
 
-struct VSOut
+struct PSIn
 {
-	float4 pos	: SV_Position;
-	float4 color : COLOR0;
+	float4 pos : SV_Position;
+ 	float2 uv : TEXCOORD0;
 };
 
-cbuffer SimpleConst : register(b0)
+//--------------------------------------------------------------------------
+// Samplers
+SamplerState linear : register(s0);
+
+
+//--------------------------------------------------------------------------
+// Textures & Buffers
+Texture2D diffuse : register(t0);
+
+//--------------------------------------------------------------------------
+// Const buffers
+cbuffer cbNeverChange : register(b0)
 {
-	float4x4 mvp;
+	matrix view;
 };
 
-VSOut SimpleVSMain( VSIn in )
+cbuffer cbChangeOnResize : register(b1)
 {
-	VSOut out;
-	out.color = in.color;
-	out.pos = mul(in.pos, mvp);
+	matrix proj;
+};
+
+cbuffer cbChangeEveryFrame : register(b2)
+{
+	matrix world;
+	float4 color;
+};
+
+
+//--------------------------------------------------------------------------
+// Vertex Shaders
+PSIn SimpleVSMain( VSIn in )
+{
+ 	PSIn out = (PSIn)0;
+ 	out.pos = mul(in.pos, world);
+ 	out.pos = mul(out.pos, view);
+ 	out.pos = mul(out.pos, proj);
+ 	out.uv = in.uv;
 }
 
+
+//--------------------------------------------------------------------------
+// Pixel Shaders
+float4 SimplePSMain( PSIn in ) : SV_Target
+{
+	return diffuse.Sample(linear, input.uv) * color;
+}
