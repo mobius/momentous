@@ -65,6 +65,9 @@ union d3du_shader {
    ID3D11PixelShader * ps;
    ID3D11VertexShader * vs;
    ID3D11ComputeShader * cs;
+   ID3D11HullShader *hs;
+   ID3D11GeometryShader *gs;
+   ID3D11DomainShader *ds;
 };
 
 // Compile and create a shader with the given profile on the given device
@@ -117,6 +120,19 @@ T* d3du_map_cbuf(d3du_context* ctx, ID3D11Buffer* buf)
 {
     return (T*) d3du_map_cbuf_typeless(ctx, buf);
 }
+
+template<typename T>
+struct d3du_scope
+{
+    d3du_scope(T* res) : ptr(res) {}
+    ~d3du_scope() { ptr->Release(); }
+
+    operator T*() const  { return ptr; }
+    T& operator *() const { return *ptr; }
+    T* operator ->() const { return ptr; }
+private:
+    T*  ptr;
+};
 
 inline void d3du_unmap_cbuf(d3du_context* ctx, ID3D11Buffer* buf)
 {

@@ -186,7 +186,7 @@ int main()
 
     char* shader_source = read_file("assets/shader/shaders.hlsl");
 
-    ID3D11VertexShader *update_vs = d3du_compile_and_create_shader(d3d->dev, shader_source,
+    ID3D11VertexShader* update_vs = d3du_compile_and_create_shader(d3d->dev, shader_source,
         "vs_4_0", "UpdateVertShader").vs;
     ID3D11PixelShader *update_pos_ps = d3du_compile_and_create_shader(d3d->dev, shader_source,
         "ps_4_0", "UpdatePosShader").ps;

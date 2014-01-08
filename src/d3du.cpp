@@ -468,6 +468,9 @@ d3du_shader d3du_compile_and_create_shader( ID3D11Device * dev, char const * sou
     case 'p':   hr = dev->CreatePixelShader( code->GetBufferPointer(), code->GetBufferSize(), NULL, &sh.ps ); break;
     case 'v':   hr = dev->CreateVertexShader( code->GetBufferPointer(), code->GetBufferSize(), NULL, &sh.vs ); break;
     case 'c':   hr = dev->CreateComputeShader( code->GetBufferPointer(), code->GetBufferSize(), NULL, &sh.cs ); break;
+    case 'g':   hr = dev->CreateGeometryShader( code->GetBufferPointer(), code->GetBufferSize(), NULL, &sh.gs ); break;
+    case 'h':   hr = dev->CreateHullShader( code->GetBufferPointer(), code->GetBufferSize(), NULL, &sh.hs ); break;
+    case 'd':   hr = dev->CreateDomainShader( code->GetBufferPointer(), code->GetBufferSize(), NULL, &sh.ds ); break;
     default:    panic( "Unsupported shader profile '%s'\n", profile );
     }
 

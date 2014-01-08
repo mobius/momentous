@@ -62,7 +62,7 @@ int main(void)
     if (glewInit() != GLEW_OK )
         exit(EXIT_FAILURE);
 
-    if( !GLEW_VERSION_4_3 )
+    if( !GLEW_VERSION_4_4 )
         exit(EXIT_FAILURE);
     
 

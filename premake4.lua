@@ -1,8 +1,8 @@
 solution "samples"
 	configurations { "Debug", "Release" }
 	location "build"
-	libdirs {"$(DXSDK_DIR)Lib/x86/"}
-	includedirs {"$(DXSDK_DIR)Include/"}	
+	libdirs {"$(DXSDK_DIR)Lib/x86/", "extern/assimp/lib/"}
+	includedirs {"$(DXSDK_DIR)Include/", "extern/assimp/include/"}	
 	targetdir "bin"
 	debugdir "."
 		
@@ -27,7 +27,7 @@ solution "samples"
 			"src/main.cpp", 			
 		}
 	
-	project "simple"
+	project "simpledx"
 		kind "WindowedApp"
 		language "C++"
 		files 
@@ -37,7 +37,7 @@ solution "samples"
 			"src/math.h",
 			"src/util.h",
 			"src/util.cpp",
-			"src/simple.cpp"
+			"src/simpledx.cpp"
 		}
 
 	project "simplegl"
