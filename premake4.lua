@@ -5,7 +5,7 @@ solution "samples"
 	includedirs {"$(DXSDK_DIR)Include/", "extern/assimp/include/"}	
 	targetdir "bin"
 	debugdir "."
-		
+	
 	configuration "Debug"
 		defines { "DEBUG" }
 		flags { "Symbols" }

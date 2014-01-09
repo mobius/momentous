@@ -28,6 +28,11 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <Windows.h>
+#include "math.h"
+
 
 static void error_callback(int error, const char* description)
 {
@@ -38,6 +43,60 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
+}
+
+const char* vertex_shader =
+"#version 400\n"
+"in vec3 vp;"
+"void main () {"
+"  gl_Position = vec4 (vp, 1.0);"
+"}";
+
+const char* fragment_shader =
+"#version 400\n"
+"out vec4 frag_colour;"
+"void main () {"
+"  frag_colour = vec4 (0.5, 0.0, 0.5, 1.0);"
+"}";
+
+
+GLuint vbo, vao, vs, ps, shader;
+
+void init()
+{
+    using namespace math;
+
+    float points[] = 
+    {
+        -1.0f, -1.0f, 0.0f,
+        1.0f, -1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f
+    };
+
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+    glEnableVertexAttribArray(0);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+    
+
+    vs = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vs, 1, &vertex_shader, NULL);
+    glCompileShader(vs);
+    ps = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(ps, 1, &fragment_shader, NULL);
+    glCompileShader(ps);
+
+    shader = glCreateProgram();
+    glAttachShader(shader, ps);
+    glAttachShader(shader, vs);
+    glLinkProgram(shader);
+
 }
 
 int main(void)
@@ -68,36 +127,18 @@ int main(void)
 
     glfwSetKeyCallback(window, key_callback);
 
+    init();
+    
     while (!glfwWindowShouldClose(window))
     {
-        float ratio;
-        int width, height;
-
-        glfwGetFramebufferSize(window, &width, &height);
-        ratio = width / (float) height;
-
-        glViewport(0, 0, width, height);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glOrtho(-ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-        glMatrixMode(GL_MODELVIEW);
-
-        glLoadIdentity();
-        glRotatef((float) glfwGetTime() * 50.f, 0.f, 0.f, 1.f);
-
-        glBegin(GL_TRIANGLES);
-        glColor3f(1.f, 0.f, 0.f);
-        glVertex3f(-0.6f, -0.4f, 0.f);
-        glColor3f(0.f, 1.f, 0.f);
-        glVertex3f(0.6f, -0.4f, 0.f);
-        glColor3f(0.f, 0.f, 1.f);
-        glVertex3f(0.f, 0.6f, 0.f);
-        glEnd();
-
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glUseProgram(shader);
+        glBindVertexArray(vao);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        Sleep(1);
     }
 
     glfwDestroyWindow(window);
