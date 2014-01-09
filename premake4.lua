@@ -30,6 +30,7 @@ solution "samples"
 	project "simpledx"
 		kind "WindowedApp"
 		language "C++"
+		links {"d3dx11"}
 		files 
 		{ 
 			"src/d3du.cpp",
