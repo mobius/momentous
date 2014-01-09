@@ -23,7 +23,7 @@ Texture2D diffuse : register(t0);
 
 //--------------------------------------------------------------------------
 // Const buffers
-cbuffer cbChangeEveryFrame : register(b2)
+cbuffer cbChangeEveryFrame : register(b0)
 {
 	matrix world;
 	float4 color;

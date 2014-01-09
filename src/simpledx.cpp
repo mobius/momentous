@@ -148,11 +148,13 @@ int main()
         d3d->ctx->VSSetConstantBuffers(0, 1, &cbChangeEveryFrame);
         d3d->ctx->RSSetState(raster);
         d3d->ctx->PSSetShader(simple_ps, NULL, 0);
+        d3d->ctx->PSSetConstantBuffers(0, 1, &cbChangeEveryFrame);
         d3d->ctx->PSSetShaderResources(0, 1, &texSV);
         d3d->ctx->PSSetSamplers(0, 1, &linear);
         d3d->ctx->DrawIndexed(36, 0, 0);
 
         d3du_swap_buffers(d3d, true);
+		Sleep(30);
 	}
 
 	psblob->Release();
