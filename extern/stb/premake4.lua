@@ -15,5 +15,5 @@ solution "stb"
 	project "stb"
 		kind "StaticLib"
 		language "C"
-		files {"src/**.c"}
+		files {"src/**.c", "include/**.h"}
 

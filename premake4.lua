@@ -1,8 +1,8 @@
 solution "samples"
 	configurations { "Debug", "Release" }
 	location "build"
-	libdirs {"$(DXSDK_DIR)Lib/x86/", "extern/assimp/lib/"}
-	includedirs {"$(DXSDK_DIR)Include/", "extern/assimp/include/"}	
+	libdirs {"$(DXSDK_DIR)Lib/x86/", "extern/assimp/lib/", "extern/stb/lib/"}
+	includedirs {"$(DXSDK_DIR)Include/", "extern/assimp/include/", "extern/stb/include/"}	
 	targetdir "bin"
 	debugdir "."
 	
@@ -30,7 +30,7 @@ solution "samples"
 	project "simpledx"
 		kind "WindowedApp"
 		language "C++"
-		links {"d3dx11"}
+		links {"d3dx11", "stb"}
 		files 
 		{ 
 			"src/d3du.cpp",
