@@ -1,5 +1,7 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <Windows.h>
 #include <d3d11.h>
 #include <assert.h>
@@ -10,6 +12,8 @@
 #include "math_types.h"
 #include "d3du.h"
 #include "assimp/cimport.h"
+
+#include "lua.hpp"
 
 struct SimpleVertex
 {
@@ -25,7 +29,9 @@ struct CBChangeEveryFrame
 
 int main()
 {
-	
+	AllocConsole();
+	freopen( "CONOUT$", "wb", stdout);
+
 	d3du_context* d3d = d3du_init("Momentous", 640, 480, D3D_FEATURE_LEVEL_11_0);
 	
 	char* shader_source = read_file("assets/shader/simple.hlsl");
@@ -161,5 +167,7 @@ int main()
 	vsblob->Release();
 	d3du_shutdown(d3d);
 
+
+	FreeConsole();
 	return 0;
 }

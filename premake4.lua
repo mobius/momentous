@@ -1,8 +1,8 @@
 solution "samples"
 	configurations { "Debug", "Release" }
 	location "build"
-	libdirs {"$(DXSDK_DIR)Lib/x86/", "extern/assimp/lib/", "extern/stb/lib/", "bin"}
-	includedirs {"$(DXSDK_DIR)Include/", "extern/assimp/include/", "extern/stb/include/", "src/base/"}	
+	libdirs {"$(DXSDK_DIR)Lib/x86/", "extern/assimp/lib/", "extern/stb/lib/", "extern/lua/src/", "bin"}
+	includedirs {"$(DXSDK_DIR)Include/", "extern/assimp/include/", "extern/stb/include/", "extern/lua/src/", "src/base/"}	
 	targetdir "bin"
 	debugdir "."
 	
@@ -37,7 +37,7 @@ solution "samples"
 	project "simpledx"
 		kind "WindowedApp"
 		language "C++"
-		links {"d3dx11", "stb", "base"}
+		links {"d3dx11", "stb", "base", "lua51s"}
 		files 
 		{ 
 			"src/d3du.cpp",
