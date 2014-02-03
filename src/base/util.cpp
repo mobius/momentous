@@ -1,10 +1,10 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "util.h"
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 
 #include <vector>
 #include <algorithm>

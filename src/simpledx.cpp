@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <d3dx11.h>
 #include "util.h"
-#include "math.h"
+#include "math_types.h"
 #include "d3du.h"
 #include "assimp/cimport.h"
 
