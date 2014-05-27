@@ -2,10 +2,11 @@ solution "samples"
 	configurations { "Debug", "Release" }
 	location "build"
 	libdirs {"$(DXSDK_DIR)Lib/x86/", "extern/assimp/lib/", "extern/stb/lib/", "extern/lua/src/", "bin"}
-	includedirs {"$(DXSDK_DIR)Include/", "extern/assimp/include/", "extern/stb/include/", "extern/lua/src/", "src/base/"}	
+	includedirs {"$(DXSDK_DIR)Include/", "extern/assimp/include/", "extern/jq/", "extern/stb/include/", "extern/lua/src/", "src/base/"}	
 	targetdir "bin"
 	debugdir "."
-	
+	language "C++"
+		
 	configuration "Debug"
 		defines { "DEBUG" }
 		flags { "Symbols" }
@@ -16,7 +17,6 @@ solution "samples"
 
 	project "base"
 		kind "StaticLib"
-		language "C++"
 		files
 		{
 			"src/base/**.cpp",
@@ -25,7 +25,6 @@ solution "samples"
 
 	project "momentous"
 		kind "WindowedApp"
-		language "C++"
 		links {"base"}
 		files 
 		{ 
@@ -36,7 +35,6 @@ solution "samples"
 	
 	project "simpledx"
 		kind "WindowedApp"
-		language "C++"
 		links {"d3dx11", "stb", "base", "lua51s"}
 		files 
 		{ 
@@ -47,7 +45,6 @@ solution "samples"
 
 	project "simplegl"
 		kind "WindowedApp"
-		language "C++"
 		includedirs {"extern/glfw/include/", "extern/glew/include/"}
 		libdirs	{"extern/glfw/lib/", "extern/glew/lib/Win32/" }
 		links { "glfw3dll", "OpenGL32", "glew32", "base" }
@@ -55,3 +52,9 @@ solution "samples"
 		{
 			"src/simplegl.cpp"
 		}
+
+	project "0_test"
+		kind "ConsoleApp"
+		links {"base"}
+		files
+		{ "src/unittest.cpp"}

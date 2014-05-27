@@ -6,9 +6,10 @@
 #include <cmath>
 #include <algorithm>
 
-#include "math.h"
+#include "math_types.h"
 #include "util.h"
 #include "d3du.h"
+#include "microprofile.h"
 
 static union {
     ID3D11Buffer* buffers[16];
@@ -180,23 +181,33 @@ static d3du_tex* make_force_tex(ID3D11Device* dev, int size, float strength, flo
     return tex;
 }
 
+void microprofile_draw_init( ID3D11Device* dev );
+void microprofile_begin_draw( uint32_t width, uint32_t height, float* prj );
+void microprofile_end_draw();
+
+static const int kWindowWidth = 1280;
+static const int kWindowHeight = 720;
+
 int main()
 {	
     d3du_context* d3d = d3du_init("Momentous", 1280, 720, D3D_FEATURE_LEVEL_10_0);
 
+	microprofile_draw_init(d3d->dev);
+
     char* shader_source = read_file("assets/shader/shaders.hlsl");
+	ID3DBlob* code;
 
     ID3D11VertexShader* update_vs = d3du_compile_and_create_shader(d3d->dev, shader_source,
-        "vs_4_0", "UpdateVertShader").vs;
+        "vs_4_0", "UpdateVertShader", code).vs;
     ID3D11PixelShader *update_pos_ps = d3du_compile_and_create_shader(d3d->dev, shader_source,
-        "ps_4_0", "UpdatePosShader").ps;
+        "ps_4_0", "UpdatePosShader", code).ps;
     ID3D11PixelShader *update_vel_ps = d3du_compile_and_create_shader(d3d->dev, shader_source,
-        "ps_4_0", "UpdateVelShader").ps;
+        "ps_4_0", "UpdateVelShader", code).ps;
 
     ID3D11VertexShader *cube_vs = d3du_compile_and_create_shader(d3d->dev, shader_source,
-        "vs_4_0", "RenderCubeVertexShader").vs;
+        "vs_4_0", "RenderCubeVertexShader", code).vs;
 	ID3D11PixelShader *cube_ps = d3du_compile_and_create_shader(d3d->dev, shader_source,
-		"ps_4_0", "RenderCubePixelShader").ps;
+		"ps_4_0", "RenderCubePixelShader", code).ps;
 
     free(shader_source);
 
@@ -363,6 +374,36 @@ int main()
 
         d3d->ctx->VSSetShaderResources(0, 2, s_no.srvs);
 
+		MicroProfileFlip();
+		{
+			MICROPROFILE_SCOPEGPUI("GPU", "MicroProfileDraw", 0x88dd44);
+			float projection[16];
+			float left = 0.f;
+			float right = kWindowWidth;
+			float bottom = kWindowHeight;
+			float top = 0.f;
+			float near = -1.f;
+			float far = 1.f;
+			memset(&projection[0], 0, sizeof(projection));
+
+			projection[0] = 2.0f / (right - left);
+			projection[5] = 2.0f / (top - bottom);
+			projection[10] = -2.0f / (far - near);
+			projection[12] = - (right + left) / (right - left);
+			projection[13] = - (top + bottom) / (top - bottom);
+			projection[14] = - (far + near) / (far - near);
+			projection[15] = 1.f; 
+
+
+
+			microprofile_begin_draw(kWindowWidth, kWindowHeight, &projection[0]);
+			MicroProfileDraw(kWindowWidth, kWindowHeight);
+			microprofile_end_draw();
+
+
+		}
+
+		MICROPROFILE_SCOPEI("MAIN", "Flip", 0xffee00);
         d3du_swap_buffers(d3d, true);
         frame++;
     }

@@ -75,6 +75,7 @@ namespace foundation
 		/// memory, memory from the default_allocator will be returned instead.
 		Allocator &default_scratch_allocator();
 
+
 		/// Shuts down the global memory allocators created by init().
 		void shutdown();
 	}
